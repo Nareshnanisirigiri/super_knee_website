@@ -5,17 +5,14 @@ import { useNavigate } from "react-router-dom";
 import {
   Box, Typography, Grid, Paper, Table, TableHead,
   TableRow, TableCell, TableBody, Chip, CircularProgress,
-  IconButton, Tooltip, Badge, LinearProgress, List, 
-  ListItem, ListItemText, Divider
+  IconButton, Tooltip, Badge
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import GroupIcon from "@mui/icons-material/Group";
-import InventoryIcon from "@mui/icons-material/Inventory";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
-import StarIcon from "@mui/icons-material/Star";
 
 const SOCKET_URL = window.location.hostname === "localhost"
   ? "http://localhost:5000"
