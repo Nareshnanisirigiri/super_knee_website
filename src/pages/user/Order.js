@@ -19,7 +19,8 @@ function Order() {
 
   const fetchOrders = async () => {
     try {
-      const res = await api.get("/payment/my-orders");
+      const res = await api.get("/payment/user-orders");
+ // Fixed API endpoint
 
       setOrders(res.data);
     } catch (error) {

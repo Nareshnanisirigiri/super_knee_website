@@ -70,7 +70,10 @@ export default function Topbar({ toggleSidebar }) {
         <TextField
           placeholder="Search..."
           size="small"
-          sx={{ width: { xs: "auto", sm: 250, md: 400 }, flex: { xs: 1, md: "none" } }}
+          sx={{ 
+            width: { xs: 120, sm: 250, md: 400 }, 
+            flex: { xs: "none", sm: "none" } 
+          }}
         />
       </Box>
 
@@ -90,7 +93,7 @@ export default function Topbar({ toggleSidebar }) {
           {user?.name?.charAt(0)}
         </Avatar>
 
-        <Box>
+        <Box sx={{ display: { xs: "none", sm: "block" } }}>
           <Typography fontWeight="bold">
             {user?.name}
           </Typography>

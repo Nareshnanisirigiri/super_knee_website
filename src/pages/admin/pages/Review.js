@@ -31,7 +31,10 @@ export default function Reviews() {
   const fetchReviews = useCallback(async () => {
     try {
       const res = await api.get("/admin/reviews");
+      /* --- PREVIOUS CODE ---
       setReviews(res.data);
+      ----------------------- */
+      setReviews(res.data.reviews || []);
     } catch (err) {
       console.error("Fetch reviews error:", err);
     } finally {
@@ -64,7 +67,9 @@ export default function Reviews() {
       {/* Header */}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight="bold" mb={0.5}>Customer Reviews</Typography>
+          <Typography variant="h4" fontWeight="bold" mb={0.5} sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" } }}>
+            Customer Reviews
+          </Typography>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <FiberManualRecordIcon sx={{ fontSize: 12, color: connected ? "#10b981" : "#ef4444" }} />
             <Typography variant="body2" color="text.secondary">

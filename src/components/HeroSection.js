@@ -77,10 +77,16 @@ export default function HeroSection() {
                   fontSize: { xs: "2rem", md: "3.2rem" },
                 }}
               >
+                {/* --- PREVIOUS CODE ---
+                SUPER KNEE SACHETS
+                ----------------------- */}
                 SUPER HEALTH SACHETS
               </Typography>
 
               <Typography variant="h6" sx={{ mb: 4, color: "#e2e8f0" }}>
+                {/* --- PREVIOUS CODE ---
+                By Super Knee | Formulated by Pain Management Specialists
+                ----------------------- */}
                 By Super Health | Formulated by Pain Management Specialists
               </Typography>
 
@@ -128,7 +134,7 @@ export default function HeroSection() {
                   borderRadius: "20px",
                   overflow: "hidden",
                   boxShadow: "0 0 35px rgba(34,197,94,0.4)",
-                }}
+                 }}
               >
                 {mediaList[currentIndex].type === "image" ? (
                   <Box

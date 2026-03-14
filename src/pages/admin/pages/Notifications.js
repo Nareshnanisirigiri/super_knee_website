@@ -35,7 +35,10 @@ export default function Notifications() {
   const fetchNotes = useCallback(async () => {
     try {
       const res = await api.get("/admin/notifications");
+      /* --- PREVIOUS CODE ---
       setNotifications(res.data);
+      ----------------------- */
+      setNotifications(res.data.notifications || []);
     } catch (err) {
       console.error("Fetch notes error:", err);
     } finally {
@@ -88,7 +91,9 @@ export default function Notifications() {
       {/* Header */}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight="bold" mb={0.5}>System Notifications</Typography>
+          <Typography variant="h4" fontWeight="bold" mb={0.5} sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" } }}>
+            System Notifications
+          </Typography>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <FiberManualRecordIcon
               sx={{ fontSize: 12, color: connected ? "#10b981" : "#ef4444", animation: connected ? "pulse 2s infinite" : "none" }}

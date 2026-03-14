@@ -18,6 +18,7 @@ import {
   FormControl,
   IconButton,
   Tooltip,
+  Stack,
   TextField,
   InputAdornment,
 } from "@mui/material";
@@ -63,8 +64,13 @@ export default function Orders() {
 
       const res = await api.get("/admin/orders");
 
+      /* --- PREVIOUS CODE ---
       setOrders(res.data);
       setFiltered(res.data);
+      ----------------------- */
+      const ordersData = res.data.orders || [];
+      setOrders(ordersData);
+      setFiltered(ordersData);
 
     } catch (err) {
 
@@ -185,7 +191,7 @@ export default function Orders() {
 
         <Box>
 
-          <Typography variant="h4" fontWeight="bold" mb={0.5}>
+          <Typography variant="h4" fontWeight="bold" mb={0.5} sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" } }}>
             Order Management
           </Typography>
 
@@ -229,7 +235,7 @@ export default function Orders() {
             </InputAdornment>
           )
         }}
-        sx={{ mb: 2, width: 350 }}
+        sx={{ mb: 2, width: { xs: "100%", sm: 350 } }}
       />
 
 
@@ -293,17 +299,22 @@ export default function Orders() {
 
                     <TableCell>
 
-                      <Chip
-                        label={order.paymentStatus}
-                        color={
-                          order.paymentStatus === "Completed"
-                            ? "success"
-                            : order.paymentStatus === "Failed"
-                            ? "error"
-                            : "warning"
-                        }
-                        size="small"
-                      />
+                      <Stack direction="column" spacing={0.5}>
+                        <Chip
+                          label={order.paymentStatus}
+                          color={
+                            order.paymentStatus === "Completed"
+                              ? "success"
+                              : order.paymentStatus === "Failed"
+                              ? "error"
+                              : "warning"
+                          }
+                          size="small"
+                        />
+                        <Typography variant="caption" color="text.secondary">
+                          {order.paymentMethod || "Online"}
+                        </Typography>
+                      </Stack>
 
                     </TableCell>
 

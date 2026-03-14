@@ -31,7 +31,10 @@ export default function Categories() {
   const fetchCategories = useCallback(async () => {
     try {
       const res = await api.get("/admin/products");
+      /* --- PREVIOUS CODE ---
       setCategories(buildCategories(res.data));
+      ----------------------- */
+      setCategories(buildCategories(res.data.products || []));
     } catch (err) {
       console.error(err);
     } finally {
@@ -57,7 +60,9 @@ export default function Categories() {
     <Box>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight="bold" mb={0.5}>Categories</Typography>
+          <Typography variant="h4" fontWeight="bold" mb={0.5} sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" } }}>
+            Categories
+          </Typography>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <FiberManualRecordIcon sx={{ fontSize: 12, color: connected ? "#10b981" : "#ef4444" }} />
             <Typography variant="body2" color="text.secondary">

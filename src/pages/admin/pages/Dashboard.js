@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import {
   Box, Typography, Grid, Paper, Table, TableHead,
   TableRow, TableCell, TableBody, Chip, CircularProgress,
-  IconButton, Tooltip, Badge,
+  IconButton, Tooltip, Badge, LinearProgress, List, 
+  ListItem, ListItemText, Divider
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
@@ -13,6 +14,8 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import GroupIcon from "@mui/icons-material/Group";
 import InventoryIcon from "@mui/icons-material/Inventory";
+import AnalyticsIcon from "@mui/icons-material/Analytics";
+import StarIcon from "@mui/icons-material/Star";
 
 const SOCKET_URL = window.location.hostname === "localhost"
   ? "http://localhost:5000"
@@ -30,7 +33,16 @@ const statusColor = (status) => {
 };
 
 export default function Dashboard() {
-  const [stats, setStats] = useState({ totalOrders: 0, totalProducts: 0, customers: 0, revenue: 0 });
+  const [stats, setStats] = useState({ 
+    totalOrders: 0, 
+    totalProducts: 0, 
+    customers: 0, 
+    revenue: 0,
+    aov: 0,
+    topProducts: [],
+    statusDistribution: [],
+    paymentBreakdown: []
+  });
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [connected, setConnected] = useState(false);
@@ -39,13 +51,22 @@ export default function Dashboard() {
   const fetchDashboard = useCallback(async () => {
     try {
       const res = await api.get("/admin/stats");
-      setStats({
-        totalOrders: res.data.totalOrders || 0,
-        totalProducts: res.data.totalProducts || 0,
-        customers: res.data.customers || 0,
-        revenue: res.data.revenue || 0,
-      });
-      setOrders(Array.isArray(res.data.recentOrders) ? res.data.recentOrders : []);
+      if (res.data.success && res.data.stats) {
+        setStats(res.data.stats);
+        setOrders(Array.isArray(res.data.recentOrders) ? res.data.recentOrders : []);
+      } else {
+        // Fallback for old API structure
+        setStats({
+          totalOrders: res.data.totalOrders || 0,
+          totalProducts: res.data.totalProducts || 0,
+          customers: res.data.customers || 0,
+          revenue: res.data.revenue || 0,
+          aov: 0,
+          statusDistribution: [],
+          topProducts: []
+        });
+        setOrders(Array.isArray(res.data.recentOrders) ? res.data.recentOrders : []);
+      }
       setLastUpdated(new Date());
     } catch (error) {
       console.error("Dashboard fetch error:", error);
@@ -68,10 +89,10 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const statCards = [
-    { title: "Total Orders", value: stats.totalOrders, icon: <ShoppingCartIcon sx={{ fontSize: 36, color: "#3b82f6" }} />, bg: "#eff6ff", border: "#bfdbfe", path: "/admin/orders" },
-    { title: "Total Products", value: stats.totalProducts, icon: <InventoryIcon sx={{ fontSize: 36, color: "#8b5cf6" }} />, bg: "#f5f3ff", border: "#ddd6fe", path: "/admin/products" },
-    { title: "Customers", value: stats.customers, icon: <GroupIcon sx={{ fontSize: 36, color: "#10b981" }} />, bg: "#ecfdf5", border: "#a7f3d0", path: "/admin/customers" },
-    { title: "Total Revenue", value: `₹${Number(stats.revenue).toLocaleString("en-IN")}`, icon: <TrendingUpIcon sx={{ fontSize: 36, color: "#f59e0b" }} />, bg: "#fffbeb", border: "#fde68a" },
+    { title: "Total Revenue", value: `₹${Number(stats?.revenue || 0).toLocaleString("en-IN")}`, icon: <TrendingUpIcon sx={{ fontSize: 36, color: "#f59e0b" }} />, bg: "#fffbeb", border: "#fde68a" },
+    { title: "Total Orders", value: stats?.totalOrders || 0, icon: <ShoppingCartIcon sx={{ fontSize: 36, color: "#3b82f6" }} />, bg: "#eff6ff", border: "#bfdbfe", path: "/admin/orders" },
+    { title: "Avg. Order Value", value: `₹${Number(stats?.aov || 0).toLocaleString("en-IN")}`, icon: <AnalyticsIcon sx={{ fontSize: 36, color: "#10b981" }} />, bg: "#ecfdf5", border: "#a7f3d0" },
+    { title: "Active Customers", value: stats?.customers || 0, icon: <GroupIcon sx={{ fontSize: 36, color: "#8b5cf6" }} />, bg: "#f5f3ff", border: "#ddd6fe", path: "/admin/customers" },
   ];
 
   return (
@@ -79,7 +100,9 @@ export default function Dashboard() {
       {/* Header */}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight="bold" mb={0.5}>Admin Dashboard</Typography>
+          <Typography variant="h4" fontWeight="bold" mb={0.5} sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" } }}>
+            Admin Dashboard
+          </Typography>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <FiberManualRecordIcon sx={{ fontSize: 12, color: connected ? "#10b981" : "#ef4444" }} />
             <Typography variant="body2" color="text.secondary">
@@ -126,6 +149,24 @@ export default function Dashboard() {
           </Grid>
         ))}
       </Grid>
+
+      {/* Payment Methods Section */}
+      <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: "1px solid", borderColor: "divider", mb: 4 }}>
+        <Typography variant="h6" fontWeight="bold" mb={3}>Payment Methods Breakdown</Typography>
+        <Grid container spacing={2}>
+          {stats?.paymentBreakdown?.map((item) => (
+            <Grid item xs={12} sm={6} key={item._id}>
+              <Box sx={{ p: 2.5, bgcolor: "#f9fafb", borderRadius: 3, textAlign: "center", border: "1px solid #f3f4f6" }}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>{item._id}</Typography>
+                <Typography variant="h5" fontWeight="bold">₹{item.total?.toLocaleString("en-IN")}</Typography>
+                <Typography variant="caption" sx={{ color: "#10b981", fontWeight: "bold", bgcolor: "#ecfdf5", px: 1, py: 0.5, borderRadius: 1, mt: 1, display: "inline-block" }}>
+                  {item.count} Orders
+                </Typography>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+      </Paper>
 
       {/* Recent Orders */}
       <Paper elevation={0} sx={{ borderRadius: 3, border: "1px solid", borderColor: "divider" }}>

@@ -1,32 +1,3 @@
-// import HeroSection from "../components/HeroSection";
-// import BenefitsSection from "../components/BenefitsSection";
-// import VideoSection from "../components/VideoSection";
-// import Testimonials from "../components/Testimonials";
-// import Footer from "../components/Footer";
-// import PricingSection from "../components/PricingSection";
-// import PainVideosSection from "../components/PainVideosSection";
-
-
-
-// export default function Home() {
-//   return (
-//     <>
-//       <HeroSection />
-//       <BenefitsSection />
-//       <VideoSection />
-//       <PainVideosSection />
-//       <Testimonials />
-//       <PricingSection />
-//       <Footer />
-//     </>
-//   );
-// }
-
-
-
-
-
-
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Snackbar, Alert } from "@mui/material";
@@ -85,6 +56,9 @@ export default function Home() {
               boxShadow: "0 6px 20px rgba(0,0,0,0.2)"
             }}
           >
+            {/* --- PREVIOUS CODE ---
+            Welcome to Super Knee 👋 
+            ----------------------- */}
             Welcome to Super Health 👋 <br />
             {user?.name} ({user?.role}) <br />
             Your Health — Our Support 💚

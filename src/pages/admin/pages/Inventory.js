@@ -306,7 +306,10 @@ export default function Inventory() {
 
       const res = await api.get("/admin/products");
 
+      /* --- PREVIOUS CODE ---
       setProducts(res.data);
+      ----------------------- */
+      setProducts(res.data.products || []);
 
     } catch (err) {
 
@@ -351,39 +354,21 @@ export default function Inventory() {
     });
 
 
-    /* PRODUCT CREATED */
-
-    socket.on("product:created", (product) => {
-
+    /* --- UPDATED SOCKET EVENTS --- */
+    socket.on("product:new", (product) => {
       setProducts(prev => [product, ...prev]);
-
     });
-
-
-    /* PRODUCT UPDATED */
 
     socket.on("product:updated", (product) => {
-
-      console.log("Inventory update received:", product);
-
       setProducts(prev =>
-        prev.map(p =>
-          p._id === product._id ? product : p
-        )
+        prev.map(p => p._id === product._id ? product : p)
       );
-
     });
 
-
-    /* PRODUCT DELETED */
-
-    socket.on("product:deleted", ({ _id }) => {
-
-      setProducts(prev =>
-        prev.filter(p => p._id !== _id)
-      );
-
+    socket.on("product:deleted", (id) => {
+      setProducts(prev => prev.filter(p => p._id !== id));
     });
+    /* ------------------------------ */
 
 
     return () => socket.disconnect();
@@ -499,7 +484,7 @@ export default function Inventory() {
 
         <Box>
 
-          <Typography variant="h4" fontWeight="bold">
+          <Typography variant="h4" fontWeight="bold" sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" } }}>
             Inventory Management
           </Typography>
 
@@ -597,7 +582,7 @@ export default function Inventory() {
                       </TableCell>
 
 
-                      <TableCell sx={{ width: 200 }}>
+                      <TableCell sx={{ minWidth: 120 }}>
 
                         <LinearProgress
                           variant="determinate"

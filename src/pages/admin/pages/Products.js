@@ -36,8 +36,13 @@ export default function Products() {
   const fetchProducts = useCallback(async () => {
     try {
       const res = await api.get("/admin/products");
+      /* --- PREVIOUS CODE ---
       setProducts(res.data);
       setFiltered(res.data);
+      ----------------------- */
+      const productsData = res.data.products || [];
+      setProducts(productsData);
+      setFiltered(productsData);
     } catch (err) {
       console.error(err);
     } finally {
@@ -51,9 +56,12 @@ export default function Products() {
     const socket = io(SOCKET_URL, { transports: ["websocket"] });
     socket.on("connect", () => setConnected(true));
     socket.on("disconnect", () => setConnected(false));
-    socket.on("product:created", (p) => setProducts((prev) => [p, ...prev]));
+    
+    /* --- UPDATED SOCKET EVENTS --- */
+    socket.on("product:new", (p) => setProducts((prev) => [p, ...prev]));
     socket.on("product:updated", (p) => setProducts((prev) => prev.map((x) => x._id === p._id ? p : x)));
-    socket.on("product:deleted", ({ _id }) => setProducts((prev) => prev.filter((x) => x._id !== _id)));
+    socket.on("product:deleted", (id) => setProducts((prev) => prev.filter((x) => x._id !== id)));
+    /* ----------------------------- */
 
     return () => socket.disconnect();
   }, [fetchProducts]);
@@ -108,7 +116,9 @@ export default function Products() {
       {/* Header */}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight="bold" mb={0.5}>Product Management</Typography>
+          <Typography variant="h4" fontWeight="bold" mb={0.5} sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" } }}>
+            Product Management
+          </Typography>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <FiberManualRecordIcon sx={{ fontSize: 12, color: connected ? "#10b981" : "#ef4444" }} />
             <Typography variant="body2" color="text.secondary">
@@ -129,7 +139,7 @@ export default function Products() {
       <TextField size="small" placeholder="Search products…" value={search}
         onChange={(e) => setSearch(e.target.value)}
         InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment> }}
-        sx={{ mb: 2, width: 320 }}
+        sx={{ mb: 2, width: { xs: "100%", sm: 320 } }}
       />
 
       <Paper elevation={0} sx={{ borderRadius: 3, border: "1px solid", borderColor: "divider" }}>
